@@ -47,7 +47,7 @@ int main(){
       tokens[tok_count] = strsep(&temp_tok, "\n");
       tok_count++;
     }
-    tokens[tok_count] == NULL;
+    tokens[tok_count] = '\0';
     what_to_do(tokens);
 
   }
@@ -65,11 +65,16 @@ void what_to_do(char * args[]){
   if(strcmp(args[0], "exit") == 0)
     exit(0);
   while(args[c1]){
+    //handles redirects
     if((strcmp(args[c1], ">") == 0) || 
        (strcmp(args[c1], "<") == 0) ||
        (strcmp(args[c1], "&") == 0)){
       printf("\nRedirect section\n");
     }
+    //handles semicolon separated commands
+    if(strcmp(args[c1], ";") == 0)
+      printf("\nMultiple Commands\n");
+      multiple_commands(args);
     c1++;
   }
 
@@ -82,13 +87,32 @@ void regular_commands(char *args[]){
   if(pid = fork())
     error = wait(&status);
   else{
-    printf("\n");
+    //printf("\n");
     error = execvp(args[0], args);
     if(error == -1)
       printf("ERROR AT REGULAR_COMMANDS: %s\n", strerror(errno));
   }
 }
 
-
+void multiple_commands(char *args[]){
+  char *run_these[10];
+  int c1 = 0; //parse through full args
+  int c2 = 0; //parse through run_these (resets in while)
+  while(args[c1] != '\0'){
+    while(strcmp(args[c1], ";") != 0){
+      run_these[c2] = args[c1];
+      c1++;
+      c2++;
+    }
+    c1++;
+    run_these[c2] = '\0';
+    regular_commands(run_these);
+    while(c2 > 0){
+      run_these[c2] = '\0';
+      c2--;
+    }
+  }  
+}
+    
 
 

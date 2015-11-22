@@ -1,0 +1,14 @@
+1. ls
+2. ls -l
+3. ls -al
+4. echo TEST1 ; echo TEST2 ; echo TEST3 ; echo TEST4
+5. touch test
+6. ls
+7. mv test test_mv
+8. mkdir test_folder
+9. ls
+10. cp test_mv test_folder
+11. pwd
+12. cd test_folder
+13. pwd
+14. ls
