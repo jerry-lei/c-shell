@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,15 +12,17 @@
 
 
 void start_shell_print(){
-  printf("\n-----------");
-  printf("\n--C-Shell--");
-  printf("\n-----------");
+  printf("\n|==============================================================================|");
+  printf("\n|------------------------------------------------------------------------------|");
+  printf("\n|------------------------------------CSHELL------------------------------------|");
+  printf("\n|------------------------------------------------------------------------------|");
+  printf("\n|==============================================================================|");
   printf("\n\n");
 }
 
 void current_working_directory_print(){
   //getcwd returns newline
-  printf("%s >> ", getcwd(current_directory, 1024));
+  printf("[C-SHELL] %s >> ", getcwd(current_directory, 1024));
 }
 
 int main(){
@@ -55,7 +58,7 @@ void what_to_do(char * args[]){
   /*
     Looks through args to see what to do.
     Checks if args[n] has any of the special cases(cd, pipe, redirect)
-    If it doesn't, uses execvp.
+    If it doesn't, runs regular command method.
   */
   int c1 = 0;
 
@@ -69,11 +72,23 @@ void what_to_do(char * args[]){
     }
     c1++;
   }
-  execvp(args[0], args)   
 
-      
-
-
+  //reg expressions go last(check if special cases first)
+  regular_commands(args);   
 }
+
+void regular_commands(char *args[]){
+  int status, error;
+  if(pid = fork())
+    error = wait(&status);
+  else{
+    printf("\n");
+    error = execvp(args[0], args);
+    if(error == -1)
+      printf("ERROR AT REGULAR_COMMANDS: %s\n", strerror(errno));
+  }
+}
+
+
 
 
