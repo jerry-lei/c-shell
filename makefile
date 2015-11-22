@@ -5,3 +5,4 @@ run:
 clean:
 	rm *~
 	rm *.o
+
