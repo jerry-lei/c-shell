@@ -48,6 +48,10 @@ int main(){
       tok_count++;
     }
     tokens[tok_count] = '\0';
+    if(strcmp(tokens[0], "cd") == 0){
+      change_directory(tokens);
+      continue;
+    }
     what_to_do(tokens);
 
   }
@@ -72,10 +76,14 @@ void what_to_do(char * args[]){
       printf("\nRedirect section\n");
     }
     //handles semicolon separated commands
-    if(strcmp(args[c1], ";") == 0)
+    
+    if(strcmp(args[c1], ";") == 0){
       printf("\nMultiple Commands\n");
       multiple_commands(args);
+    }
+
     c1++;
+    
   }
 
   //reg expressions go last(check if special cases first)
@@ -114,5 +122,16 @@ void multiple_commands(char *args[]){
   }  
 }
     
-
-
+void change_directory(char *args[]){
+  if(args[1] == '\0'){
+    chdir(getenv("HOME"));
+    return;
+  }
+  //if it args[1] is doable, chdir
+  //if args[1] is not doable, returns 'is not a directory'
+  else
+    if(chdir(args[1]) == -1){
+      printf("%s is not a directory\n", args[1]);
+      return;
+    }
+}
