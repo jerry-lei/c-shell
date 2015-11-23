@@ -1,4 +1,4 @@
-all: shell.c shells.h
+all: shell.c utils.h
 	gcc shell.c -o c-shell
 run:
 	./c-shell

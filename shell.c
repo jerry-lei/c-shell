@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "shells.h"
+#include "utils.h"
 
 
 void start_shell_print(){
@@ -21,7 +21,10 @@ void start_shell_print(){
 }
 
 void current_working_directory_print(){
-  //getcwd returns newline
+  /*
+    Looped in main
+    Gets the current working directory
+  */
   printf("[C-SHELL] %s >> ", getcwd(current_directory, 1024));
 }
 
@@ -47,7 +50,11 @@ int main(){
       tokens[tok_count] = strsep(&temp_tok, "\n");
       tok_count++;
     }
-    tokens[tok_count] = '\0';
+    //makes everything from tokens[tok_count] onwards to '\0'
+    while(tok_count < TOK_LIMIT){
+      tokens[tok_count] = '\0';
+      tok_count++;
+    }
     if(strcmp(tokens[0], "cd") == 0){
       change_directory(tokens);
       continue;
@@ -78,8 +85,8 @@ void what_to_do(char * args[]){
     //handles semicolon separated commands
     
     if(strcmp(args[c1], ";") == 0){
-      printf("\nMultiple Commands\n");
       multiple_commands(args);
+      return;
     }
 
     c1++;
@@ -91,11 +98,15 @@ void what_to_do(char * args[]){
 }
 
 void regular_commands(char *args[]){
+  /*
+    Used in multiple_commands and what_to_do if none of the special cases apply
+    Takes in args with terminating null 
+    forks and execvp
+  */
   int status, error;
   if(pid = fork())
     error = wait(&status);
   else{
-    //printf("\n");
     error = execvp(args[0], args);
     if(error == -1)
       printf("ERROR AT REGULAR_COMMANDS: %s\n", strerror(errno));
@@ -103,11 +114,15 @@ void regular_commands(char *args[]){
 }
 
 void multiple_commands(char *args[]){
+  /*
+    Used in what_to_do if args contains a ";"
+    Runs regular_commands by separating into separate arrays of arguments
+  */
   char *run_these[10];
-  int c1 = 0; //parse through full args
-  int c2 = 0; //parse through run_these (resets in while)
-  while(args[c1] != '\0'){
-    while(strcmp(args[c1], ";") != 0){
+  int c1 = 0; //count through full args
+  int c2 = 0; //count through run_these (resets in while)
+  while(args[c1]){
+    while(args[c1] != '\0' && strcmp(args[c1], ";")){
       run_these[c2] = args[c1];
       c1++;
       c2++;
@@ -123,6 +138,10 @@ void multiple_commands(char *args[]){
 }
     
 void change_directory(char *args[]){
+  /*
+    In main loop and used when arg[0] is "cd"
+    Changes directory
+  */
   if(args[1] == '\0'){
     chdir(getenv("HOME"));
     return;
