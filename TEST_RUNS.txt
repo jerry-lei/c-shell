@@ -1,6 +1,6 @@
 1. ls
 2. ls -l
-3. ls -al
+3. ls -al ; echo TEST
 4. echo TEST1 ; echo TEST2 ; echo TEST3 ; echo TEST4
 5. touch test
 6. ls
