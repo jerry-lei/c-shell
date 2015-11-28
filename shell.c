@@ -78,12 +78,11 @@ void what_to_do(char * args[]){
   while(args[c1]){
     //handles redirects
     if((strcmp(args[c1], ">") == 0) || 
-       (strcmp(args[c1], "<") == 0) ||
-       (strcmp(args[c1], "&") == 0)){
-      printf("\nRedirect section\n");
+       (strcmp(args[c1], "<") == 0)){
+      simple_redirection(args);
+      return;
     }
     //handles semicolon separated commands
-    
     if(strcmp(args[c1], ";") == 0){
       multiple_commands(args);
       return;
@@ -154,3 +153,38 @@ void change_directory(char *args[]){
       return;
     }
 }
+
+void simple_redirection(char *args[]){
+  char *stuff_before[10];
+  int file;
+  int count_before = 0;
+  int input_output; //0 if input, 1 if output
+  while(strcmp(args[count_before], ">") != 0 && strcmp(args[count_before], "<")){
+    stuff_before[count_before] = args[count_before];
+    count_before++;
+  }
+  char *file_name = args[count_before + 1];
+  if(strcmp(args[count_before], ">") == 0)
+    input_output = 1;
+  else if(strcmp(args[count_before], "<") == 0)
+    input_output = 0;
+  while(count_before < 10){
+    stuff_before[count_before] = '\0';
+    count_before++;
+  }
+  if(pid=fork()==0){
+    if(input_output == 1){
+      int fd = open(file_name, O_CREAT | O_WRONLY, 0777);
+      dup2(fd, STDOUT_FILENO);
+      close(fd);
+    }
+    if(input_output == 0){
+      int fd = open(file_name, O_RDONLY, 0777);
+      dup2(fd, STDIN_FILENO);
+      close(fd);
+    }
+    execvp(stuff_before[0], stuff_before);
+  }
+  waitpid(pid, NULL,0);
+}
+

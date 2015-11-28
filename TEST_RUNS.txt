@@ -1,20 +1,27 @@
-1. ls
-2. ls -l
-3. ls -al ; echo TEST
-4. echo TEST1 ; echo TEST2 ; echo TEST3 ; echo TEST4
-5. touch test
-6. ls
-7. mv test test_mv
-8. mkdir test_folder
-9. ls
-10. cp test_mv test_folder
-11. rm test_mv
-12. pwd
-13. cd test_folder
-14. pwd
-15. ls
-16. nautilus .
-
-
-
+General Commands Testing:
+cd testing
+touch a b c d e f g
+ls -l
+ls -al ; echo TEST
+echo TEST1 ; echo TEST2 ; echo TEST3 ; echo TEST4
+touch test
+ls
+mv test test_mv
+mkdir test_folder
+ls
+cp test_mv test_folder
+rm test_mv
+pwd
+cd test_folder
+pwd
+ls
+nautilus .
+rm -rf test_folder
 exit
+
+
+Redirection testing:
+cd testing
+ls > temp.txt
+ls
+wc < temp.txt
