@@ -1,0 +1,48 @@
+C-Shell
+Jerry Lei
+
+Features:
+ Forks to execute commands.
+ Runs infinitely many commands separated by ';'.
+ Can redirect '>', '<'.
+ Can do one pipe, once.
+
+Attempted:
+ Not end the shell loop in pipe.
+ Attempted >>, but segfault when appending.
+ When redirecting, creates an executable file.
+
+Bugs:
+ Running a pipe command will kill the entire shell (command will return).
+
+Files & Function Headers:
+shell.c
+
+========void what_to_do(char * args[]);
+	Input: Args separated by ' '
+	Purpose: Checks if any of the args meet a special case
+	If it does, redirects to the specific location
+	If it doesn't, just runs args through regular_commands
+
+========void regular_commands(char * args[]);
+	Input: Args separated by ' '
+	Purpose: Forks and executes command'
+
+========void multiple_commands(char *args[]);
+	Input: Args separated by ' '
+	Purpose: Separates by ';' and runs regular_commands on separated arrays
+
+========void change_directory(char *args[]);
+	Input: Args separated by ' '
+	Purpose: chdir into args[1]. If args[0] is NULL, goes to HOME
+
+========void simple_redirection(char *args[]);
+	Input: Args separated by ' '
+	Purpose: checks if '>' or '<' and does one redirection appropriately
+
+========void simple_piping(char *args[]);
+	Input: Args separated by ' '
+	Purpose: Divides args before and after '|' and pipes
+	DOESN'T FUNCTION PROPERLY. CUTS OFF AFTER ONE RUN.
+
+

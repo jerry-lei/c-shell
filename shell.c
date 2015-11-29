@@ -78,13 +78,19 @@ void what_to_do(char * args[]){
   while(args[c1]){
     //handles redirects
     if((strcmp(args[c1], ">") == 0) || 
-       (strcmp(args[c1], "<") == 0)){
+       (strcmp(args[c1], "<") == 0) ||
+       (strcmp(args[c1], ">>") == 0)){
       simple_redirection(args);
       return;
     }
     //handles semicolon separated commands
     if(strcmp(args[c1], ";") == 0){
       multiple_commands(args);
+      return;
+    }
+    //handles piping
+    if(strcmp(args[c1], "|") == 0){
+      simple_piping(args);
       return;
     }
 
@@ -154,7 +160,54 @@ void change_directory(char *args[]){
     }
 }
 
+void simple_piping(char *args[]){
+  /*
+    Does a single pipe.
+
+    PROBLEM: ends the shell loop because of some children problem. Children suck.
+  */
+  char *stuff_before[10];
+  char *stuff_after[10];
+  int file;
+  int count_before = 0;
+  while(strcmp(args[count_before], "|") != 0){
+    stuff_before[count_before] = args[count_before];
+    count_before++;
+  }
+  stuff_before[count_before] = '\0';
+  int count2 = 0;
+  count_before++;
+  while(args[count_before] != '\0'){
+    stuff_after[count2] = args[count_before];
+    count_before++; count2++;
+  }
+  stuff_after[count2] = '\0';
+  int status; int error;
+  
+  int piping[2];
+  pipe(piping);
+  if(!(pid2 = fork())){
+    close(1);
+    dup(piping[1]);
+    close(piping[0]);
+    execvp(stuff_before[0], stuff_before);
+  }
+  else{
+    close(0);
+    dup(piping[0]);
+    close(piping[1]);
+    execvp(stuff_after[0], stuff_after);
+  }
+}
+
+
 void simple_redirection(char *args[]){
+  /*
+   Takes care of the most basic redirection.
+    Loops everything from args into stuff_before until it hits a > or <.
+    dup2 to STDIN if < and to STDOUT if >
+    execvp stuff_before
+  */
   char *stuff_before[10];
   int file;
   int count_before = 0;
@@ -172,9 +225,9 @@ void simple_redirection(char *args[]){
     stuff_before[count_before] = '\0';
     count_before++;
   }
-  if(pid=fork()==0){
+  if(pid2=fork()==0){
     if(input_output == 1){
-      int fd = open(file_name, O_CREAT | O_WRONLY, 0777);
+      int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0777);
       dup2(fd, STDOUT_FILENO);
       close(fd);
     }
@@ -185,6 +238,6 @@ void simple_redirection(char *args[]){
     }
     execvp(stuff_before[0], stuff_before);
   }
-  waitpid(pid, NULL,0);
+  waitpid(pid2, NULL,0);
 }
 

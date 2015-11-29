@@ -24,4 +24,10 @@ Redirection testing:
 cd testing
 ls > temp.txt
 ls
-wc < temp.txt
+wc -w < temp.txt
+
+
+Piping testing:
+ls -l | wc
+cat TEST_RUNS.txt | wc -w
+
